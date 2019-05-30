@@ -5,9 +5,6 @@ const Daemon      = require('controller');
 const middleware  = require('express-opentracing');
 const opentracing = require('opentracing');
 
-// Require models
-const Notification = model('notification');
-
 /**
  * Build notification controller
  */
