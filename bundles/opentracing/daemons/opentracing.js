@@ -2,7 +2,7 @@
 // Require dependencies
 const config      = require('config');
 const Daemon      = require('controller');
-const middleware  = require('express-opentracing');
+const middleware  = require('express-opentracing').default;
 const opentracing = require('opentracing');
 
 /**
@@ -28,7 +28,7 @@ class PrometheusDaemon extends Daemon {
   /**
    * builds notification controller
    */
-  static initialize(eden) {
+  static async initialize(eden) {
     // create tracer
     const data = {
       tracer : new opentracing.Tracer(),
@@ -37,11 +37,14 @@ class PrometheusDaemon extends Daemon {
     // hook tracer
     await eden.hook('opentracing.tracer', data);
 
+    // set tracer to eden
+    eden.tracer = data.tracer;
+
     // on render
     eden.pre('eden.router.create', (app) => {
       // use metrics
       app.use(middleware({
-        tracer : data.tracer,
+        tracer : eden.tracer,
       }));
     });
   }
